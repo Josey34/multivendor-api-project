@@ -57,6 +57,35 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/check/{productId}', [App\Http\Controllers\Api\WishlistController::class, 'check']);
     });
 
+    // Cart
+    Route::prefix('cart')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\CartController::class, 'index']);
+        Route::post('/items', [App\Http\Controllers\Api\CartController::class, 'addItem']);
+        Route::put('/items/{itemId}', [App\Http\Controllers\Api\CartController::class, 'updateItem']);
+        Route::delete('/items/{itemId}', [App\Http\Controllers\Api\CartController::class, 'removeItem']);
+        Route::delete('/clear', [App\Http\Controllers\Api\CartController::class, 'clear']);
+    });
+
+    // Addresses
+    Route::prefix('addresses')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\AddressController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\AddressController::class, 'store']);
+        Route::get('/{id}', [App\Http\Controllers\Api\AddressController::class, 'show']);
+        Route::put('/{id}', [App\Http\Controllers\Api\AddressController::class, 'update']);
+        Route::delete('/{id}', [App\Http\Controllers\Api\AddressController::class, 'destroy']);
+        Route::post('/{id}/set-default', [App\Http\Controllers\Api\AddressController::class, 'setDefault']);
+    });
+
+    // Checkout
+    Route::post('/checkout', [App\Http\Controllers\Api\CheckoutController::class, 'process']);
+
+    // Orders (customer)
+    Route::prefix('orders')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\OrderController::class, 'index']);
+        Route::get('/{orderNumber}', [App\Http\Controllers\Api\OrderController::class, 'show']);
+        Route::post('/{orderNumber}/cancel', [App\Http\Controllers\Api\OrderController::class, 'cancel']);
+    });
+
     // Vendor product management
     Route::prefix('vendor/products')->group(function () {
         Route::get('/', [App\Http\Controllers\Api\Vendor\VendorProductController::class, 'index']);
@@ -64,6 +93,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{id}', [App\Http\Controllers\Api\Vendor\VendorProductController::class, 'show']);
         Route::put('/{id}', [App\Http\Controllers\Api\Vendor\VendorProductController::class, 'update']);
         Route::delete('/{id}', [App\Http\Controllers\Api\Vendor\VendorProductController::class, 'destroy']);
+    });
+
+    // Vendor order management
+    Route::prefix('vendor/orders')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\Vendor\VendorOrderController::class, 'index']);
+        Route::get('/statistics', [App\Http\Controllers\Api\Vendor\VendorOrderController::class, 'statistics']);
+        Route::get('/{orderNumber}', [App\Http\Controllers\Api\Vendor\VendorOrderController::class, 'show']);
+        Route::put('/{orderNumber}/status', [App\Http\Controllers\Api\Vendor\VendorOrderController::class, 'updateStatus']);
     });
 
     // Test route
