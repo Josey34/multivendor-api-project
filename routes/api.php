@@ -86,6 +86,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/{orderNumber}/cancel', [App\Http\Controllers\Api\OrderController::class, 'cancel']);
     });
 
+    // File uploads
+    Route::prefix('upload')->group(function () {
+        Route::post('/product-image', [App\Http\Controllers\Api\UploadController::class, 'uploadProductImage']);
+        Route::post('/avatar', [App\Http\Controllers\Api\UploadController::class, 'uploadAvatar']);
+        Route::delete('/image', [App\Http\Controllers\Api\UploadController::class, 'deleteImage']);
+    });
+
     // Vendor product management
     Route::prefix('vendor/products')->group(function () {
         Route::get('/', [App\Http\Controllers\Api\Vendor\VendorProductController::class, 'index']);
@@ -101,6 +108,25 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/statistics', [App\Http\Controllers\Api\Vendor\VendorOrderController::class, 'statistics']);
         Route::get('/{orderNumber}', [App\Http\Controllers\Api\Vendor\VendorOrderController::class, 'show']);
         Route::put('/{orderNumber}/status', [App\Http\Controllers\Api\Vendor\VendorOrderController::class, 'updateStatus']);
+    });
+
+    // Admin routes (admin middleware required)
+    Route::middleware('admin')->prefix('admin')->group(function () {
+
+        // Dashboard
+        Route::get('/dashboard', [App\Http\Controllers\Api\Admin\DashboardController::class, 'index']);
+        Route::get('/dashboard/recent-orders', [App\Http\Controllers\Api\Admin\DashboardController::class, 'recentOrders']);
+        Route::get('/dashboard/top-products', [App\Http\Controllers\Api\Admin\DashboardController::class, 'topProducts']);
+        Route::get('/dashboard/sales-chart', [App\Http\Controllers\Api\Admin\DashboardController::class, 'salesChart']);
+
+        // Vendor management
+        Route::prefix('vendors')->group(function () {
+            Route::get('/', [App\Http\Controllers\Api\Admin\AdminVendorController::class, 'index']);
+            Route::post('/{id}/approve', [App\Http\Controllers\Api\Admin\AdminVendorController::class, 'approve']);
+            Route::post('/{id}/reject', [App\Http\Controllers\Api\Admin\AdminVendorController::class, 'reject']);
+            Route::post('/{id}/suspend', [App\Http\Controllers\Api\Admin\AdminVendorController::class, 'suspend']);
+            Route::put('/{id}/commission', [App\Http\Controllers\Api\Admin\AdminVendorController::class, 'updateCommission']);
+        });
     });
 
     // Test route
